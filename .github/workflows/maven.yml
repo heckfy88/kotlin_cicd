@@ -1,0 +1,63 @@
+name: Kotlin Maven CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build and Test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]  # You can add more OS if needed.
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'   # You can use 11 or any version that suits your project.
+
+    - name: Cache Maven dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
+
+    - name: Install Maven dependencies
+      run: mvn install -DskipTests
+
+    - name: Build and Run Tests
+      run: mvn test
+
+  deploy:
+    name: Deploy to Remote Server
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Deploy via SSH
+      uses: appleboy/ssh-action@v0.1.8
+      with:
+        host: ${{ secrets.DEPLOY_HOST }}
+        username: ${{ secrets.DEPLOY_USER }}
+        key: ${{ secrets.DEPLOY_KEY }}   # SSH key instead of password
+        port: ${{ secrets.DEPLOY_PORT }}
+        script: |
+          echo "Deploying to server..."
+          cd /Users/ruslanagaev/Desktop/deploy
+          git pull origin main
+          mvn clean install
+          echo "Deployment complete!"
