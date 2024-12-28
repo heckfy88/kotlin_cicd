@@ -50,15 +50,16 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Deploy via SSH
-      uses: appleboy/ssh-action@v0.1.8
+      uses: webfactory/ssh-agent@v0.5.3
       with:
-        host: ${{ secrets.DEPLOY_HOST }}
-        username: ${{ secrets.DEPLOY_USER }}
-        key: ${{ secrets.DEPLOY_KEY }}   # SSH key instead of password
-        port: ${{ secrets.DEPLOY_PORT }}
-        script: |
-          echo "Deploying to server..."
-          cd /Users/ruslanagaev/Desktop/deploy
-          git pull origin main
-          mvn clean install
-          echo "Deployment complete!"
+        ssh-private-key: ${{ secrets.DEPLOY_KEY }}
+
+# Добавляем сервер в хосты, которым можно доверять
+    - name: Add server to known_hosts
+      run: |
+        ssh-keyscan -H ${{ secrets.DEPLOY_SERVER }} >> ~/.ssh/known_hosts
+# Заливаем файлы на виртуальную машину
+    - name: Copy files to the local Mac machine
+      if: runner.os == 'Linux'
+      run: |
+        rsync -avz --delete ./ ${{ secrets.DEPLOY_HOST }}@${{ secrets.DEPLOY_SERVER }}:/Users/ruslanagaev/Desktop/deploy
