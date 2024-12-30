@@ -74,7 +74,7 @@ jobs:
          username: ${{ secrets.SSH_USER }}
          key: ${{ secrets.SSH_PRIVATE_KEY }}
          script: |
-           rsync -avz ./target/cicd-1.0-SNAPSHOT.jar ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/{{ secrets.SSH_USER  }}/kotlin_cicd/
+           rsync -avz ./target/cicd-1.0-SNAPSHOT.jar ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USER  }}/kotlin_cicd/
            cd kotlin_cicd
            docker compose down
            docker compose up -d --build
