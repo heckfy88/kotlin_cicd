@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: kotlin_app
+    ports:
+      - "8080:8080" # Adjust the ports if your application runs on a different port
+    environment:
+      - JAVA_OPTS=-Xms512m -Xmx1024m # Optional: JVM options
+    restart: always
