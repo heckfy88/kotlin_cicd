@@ -62,28 +62,26 @@ jobs:
 
       - name: Run unit tests
         run: mvn test
-      
-  deploy:
-   runs-on: ubuntu-latest
-   needs: test
-   steps:
 
-     - name: copy file via ssh key
-       uses: appleboy/scp-action@master
-       env:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-       with:
-        source: "./target/cicd-1.0-SNAPSHOT.jar"
-        target: "/kotlin_cicd/"
-     - name: Deploy to remote server
-       uses: appleboy/ssh-action@v1.2.0
-       with:
-         host: ${{ secrets.SSH_HOST }}
-         username: ${{ secrets.SSH_USER }}
-         key: ${{ secrets.SSH_PRIVATE_KEY }}
-         script: |
-           cd kotlin_cicd
-           docker compose down
-           docker compose up -d --build
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy JAR to Remote Server
+        run: |
+          rsync -avz ./target/cicd-1.0-SNAPSHOT.jar ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USER }}/kotlin_cicd/
+        env:
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+   
