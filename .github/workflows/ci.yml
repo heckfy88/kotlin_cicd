@@ -75,13 +75,8 @@ jobs:
          key: ${{ secrets.SSH_PRIVATE_KEY }}
          script: |
            ls
-           echo "app!!!!"
-           ls app
-           ls "kotlin_cicd1!!!"
-           ls kotlin_cicd
-           echo "wow"
-           ls -l target
-           rsync -avz /target/cicd-1.0-SNAPSHOT.jar ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USER  }}/kotlin_cicd/
+           echo "--- !!!! ---"
            cd kotlin_cicd
+           mvn clean install
            docker compose down
            docker compose up -d --build
