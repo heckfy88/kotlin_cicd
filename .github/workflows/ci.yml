@@ -80,7 +80,7 @@ jobs:
 
       - name: Deploy JAR to Remote Server
         run: |
-          rsync -avz ./target/cicd-1.0-SNAPSHOT.jar ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USER }}/kotlin_cicd/
+          rsync -avz /target/cicd-1.0-SNAPSHOT.jar ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USER }}
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_HOST: ${{ secrets.SSH_HOST }}
