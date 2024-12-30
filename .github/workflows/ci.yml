@@ -74,6 +74,9 @@ jobs:
          username: ${{ secrets.SSH_USER }}
          key: ${{ secrets.SSH_PRIVATE_KEY }}
          script: |
+           ls
+           echo "wow"
+           ls -l target
            rsync -avz /target/cicd-1.0-SNAPSHOT.jar ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USER  }}/kotlin_cicd/
            cd kotlin_cicd
            docker compose down
