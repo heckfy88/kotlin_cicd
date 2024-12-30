@@ -49,18 +49,8 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v3
 
-    - name: Set up SSH Key
-      run: |
-          mkdir -p ~/.ssh/
-          echo "$SSH_KEY" > ../private.key
-          sudo chmod 600 ../private.key
-          echo "$SSH_HOSTS" > ~/.ssh/known_hosts
-      shell: bash
-      env:
-         SSH_PRIVATE_KEY: ${{secrets.SSH_KEY}}
-         SSH_KNOWN_HOSTS: ${{secrets.SSH_HOST}}
-         SSH_KEY_PATH: ${{ github.workspace }}/../private.key
-
-    - name: Deploy Files to Local Mac
-      run: |
-        rsync -avz --delete ./ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/Users/ruslanagaev/Desktop/deploy
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./target/site/apidocs
