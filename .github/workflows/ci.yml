@@ -55,4 +55,4 @@ jobs:
     - name: Copy files to the server on Ubuntu
       if: runner.os == 'Linux'
       run: |
-        rsync -avz --delete ./ ${{ secrets.USER }}@${{ secrets.SSH_SERVER }}:/home/user1/app
+        rsync -avz --delete ./ ${{ secrets.USER }}@${{ secrets.SSH_SERVER }}:/app
