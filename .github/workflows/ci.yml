@@ -62,11 +62,21 @@ jobs:
 
       - name: Run unit tests
         run: mvn test
-        
+      
   deploy:
    runs-on: ubuntu-latest
    needs: test
    steps:
+
+     - name: copy file via ssh key
+       uses: appleboy/scp-action@master
+       env:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+       with:
+        source: "./target/cicd-1.0-SNAPSHOT.jar"
+        target: "/kotlin_cicd/"
      - name: Deploy to remote server
        uses: appleboy/ssh-action@v1.2.0
        with:
@@ -74,9 +84,6 @@ jobs:
          username: ${{ secrets.SSH_USER }}
          key: ${{ secrets.SSH_PRIVATE_KEY }}
          script: |
-           ls
-           echo "--- !!!! ---"
            cd kotlin_cicd
-           mvn clean install
            docker compose down
            docker compose up -d --build
