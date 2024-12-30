@@ -39,7 +39,13 @@ jobs:
 
     - name: Build and Run Tests
       run: mvn test
-
+  
+    - name: 'Upload Artifact'
+      uses: actions/upload-artifact@v4
+      with:
+        name: my-page
+        path: index.html
+        retention-days: 5
 
     # <Not provided for brevity>
     # At a minimum this job should upload artifacts using actions/upload-pages-artifact
